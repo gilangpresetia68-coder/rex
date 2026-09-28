@@ -1,0 +1,66 @@
+--[[
+    REXX SCRIPT
+    Steal An Egg
+    Fixed UI + Auto Boss
+]]
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local TeleportService = game:GetService("TeleportService")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+-- Hapus UI lama
+pcall(function()
+    if PlayerGui:FindFirstChild("REXX") then PlayerGui.REXX:Destroy() end
+    if PlayerGui:FindFirstChild("REXX_Toggle") then PlayerGui.REXX_Toggle:Destroy() end
+end)
+
+-- ==================== MAIN GUI ====================
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "REXX"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.Parent = PlayerGui
+
+local Main = Instance.new("Frame")
+Main.Name = "Main"
+Main.Size = UDim2.fromOffset(520, 390)
+Main.Position = UDim2.new(0.5, -260, 0.5, -195)
+Main.BackgroundColor3 = Color3.fromRGB(245, 250, 245)
+Main.BorderSizePixel = 0
+Main.Active = true
+Main.Parent = ScreenGui
+
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 12)
+
+local stroke = Instance.new("UIStroke", Main)
+stroke.Color = Color3.fromRGB(40, 180, 90)
+stroke.Thickness = 2
+
+-- Title Bar
+local TitleBar = Instance.new("Frame")
+TitleBar.Size = UDim2.new(1, 0, 0, 40)
+TitleBar.BackgroundColor3 = Color3.fromRGB(40, 170, 85)
+TitleBar.BorderSizePixel = 0
+TitleBar.Parent = Main
+Instance.new("UICorner", TitleBar).CornerRadius = UDim.new(0, 12)
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, -95, 1, 0)
+Title.Position = UDim2.fromOffset(12, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "REXX  |  Steal An Egg"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 15
+Title.Font = Enum.Font.GothamBold
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = TitleBar
+
+-- Minimize (-)
+local MinBtn = Instance.new("TextButton")
+MinBtn.Size = UDim2.fromOffset(28, 28)
+MinBtn.Position = UDim2.new(1, -68, 0.5, -14)
+MinBtn.BackgroundColor3 = Color3.fromRGB(30, 140, 70)
+MinBtn.
