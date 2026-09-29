@@ -1,0 +1,83 @@
+--========== SHIELD (SAFE VERSION) ==========--
+local ShieldEnabled = false
+
+-- [1] Hook Kick via hookmetamethod (paling aman & direkomendasikan Delta)
+pcall(function()
+    if hookmetamethod and getnamecallmethod and newcclosure then
+        local oldNamecall
+        oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
+            local method = getnamecallmethod()
+            if method == "Kick" then
+                warn("[Shield] Blocked Kick attempt")
+                return
+            end
+            return oldNamecall(self, ...)
+        end))
+        ShieldEnabled = true
+        print("[Shield] Kick hook installed (hookmetamethod)")
+    end
+end)
+
+-- [2] Fallback: pakai setreadonly, TAPI restore readonly setelahnya
+if not ShieldEnabled then
+    pcall(function()
+        if setreadonly and getrawmetatable and getnamecallmethod and newcclosure then
+            local mt = getrawmetatable(game)
+            local oldNamecall = rawget and rawget(mt, "__namecall") or mt.__namecall
+            if oldNamecall then
+                setreadonly(mt, false)
+                mt.__namecall = newcclosure(function(self, ...)
+                    local method = getnamecallmethod()
+                    if method == "Kick" then
+                        warn("[Shield] Blocked Kick attempt (fallback)")
+                        return
+                    end
+                    return oldNamecall(self, ...)
+                end)
+                setreadonly(mt, true) -- ⚠ WAJIB di-restore!
+                ShieldEnabled = true
+                print("[Shield] Kick hook installed (setreadonly fallback)")
+            end
+        end
+    end)
+end
+
+-- [3] Destroy RemoteEvent mencurigakan (dibungkus pcall terpisah)
+pcall(function()
+    if getgc then
+        local killed = 0
+        for _, obj in pairs(getgc(true)) do
+            if typeof(obj) == "Instance" and obj:IsA("RemoteEvent") then
+                local n = string.lower(obj.Name)
+                if n:find("kick") or n:find("ban") or n:find("report")
+                or n:find("detect") or n:find("cheatlog") then
+                    pcall(function() obj:Destroy() end)
+                    killed = killed + 1
+                end
+            end
+        end
+        if killed > 0 then
+            print("[Shield] Destroyed " .. killed .. " suspicious RemoteEvent(s)")
+        end
+    end
+end)
+
+-- [4] Disable LocalScript anti-cheat yang ada di game
+pcall(function()
+    local disabled = 0
+    for _, s in pairs(game:GetDescendants()) do
+        if s:IsA("LocalScript") then
+            local n = string.lower(s.Name)
+            if n:find("anticheat") or n:find("anti_cheat")
+            or n:find("kicklog") or n:find("cheatdetect") then
+                pcall(function() s.Disabled = true end)
+                disabled = disabled + 1
+            end
+        end
+    end
+    if disabled > 0 then
+        print("[Shield] Disabled " .. disabled .. " anti-cheat LocalScript(s)")
+    end
+end)
+
+print("[Shield] Status: " .. (ShieldEnabled and "ACTIVE" or "PARTIAL"))
